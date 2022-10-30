@@ -18,13 +18,16 @@
 </template>
 
 <script lang="ts" setup>
-import AppAside from './components/AppAside.vue'
+import AppAside from "./components/AppAside.vue";
 </script>
 
 <style lang="less" scoped>
 .common-layout,
 .el-container {
   height: 100%;
+}
+.el-aside {
+  overflow-x: hidden;
 }
 .el-footer {
   font-size: 12px;

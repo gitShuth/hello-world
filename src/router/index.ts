@@ -1,11 +1,14 @@
-import { formItemValidateStates } from 'element-plus'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import Home from '../layout/index.vue'
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Index',
+    meta: {
+      icon: false,
+      iconName: '',
+      title: '首页'
+    },
     component: () =>
       import(/* webpackChunkName: "about" */ '@/layout/index.vue'),
     redirect: '/home',
@@ -16,11 +19,32 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           icon: false, // 是否带图标
           iconName: '', // 图标名称
-          menu: false, // 是否还有子路由
+          menu: true,
           subMenu: false, // 是否为el-sub-menu菜单
           title: '我的主页' // 菜单名
         },
-        component: () => import('@/views/home/index.vue')
+        component: () => import('@/views/home/index.vue'),
+        redirect: '/home/page2',
+        children: [
+          {
+            path: 'page1',
+            name: 'Page1',
+            meta: {
+              menu: false,
+              subMenu: false
+            },
+            component: () => import('@/views/home/page1/index.vue')
+          },
+          {
+            path: 'page2',
+            name: 'Page2',
+            meta: {
+              menu: false,
+              subMenu: false
+            },
+            component: () => import('@/views/home/page2/index.vue')
+          }
+        ]
       },
       {
         path: 'markdown',
@@ -32,13 +56,12 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () =>
           import(/* webpackChunkName: "about" */ '@/views/markdown/index.vue'),
-        redirect: '/markdown/markdownEditor',
         children: [
           {
             path: 'markdownEditor',
             name: 'MarkdownEditor',
             meta: {
-              menu: false,
+              menu: true,
               subMenu: false,
               title: 'EDITOR'
             },
@@ -51,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
             path: 'markdownPreview',
             name: 'MarkdownPreview',
             meta: {
-              menu: false,
+              menu: true,
               subMenu: false,
               title: 'PREVIEW'
             },
@@ -86,18 +109,39 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'genshinRole',
                 name: 'GenshinRole',
                 meta: {
-                  menu: false,
+                  menu: true,
                   subMenu: false,
                   title: 'ROLE'
                 },
                 component: () =>
-                  import('@/views/mihoyoGame/genshin/role/index.vue')
+                  import('@/views/mihoyoGame/genshin/role/index.vue'),
+                redirect: '/mihoyoGame/genshin/genshinRole/qiqi',
+                children: [
+                  {
+                    path: 'qiqi',
+                    name: 'QiQi',
+                    meta: {
+                      menu: false
+                    },
+                    component: () =>
+                      import('@/views/mihoyoGame/genshin/role/qiqi/index.vue')
+                  },
+                  {
+                    path: 'keqin',
+                    name: 'KeQin',
+                    meta: {
+                      menu: false
+                    },
+                    component: () =>
+                      import('@/views/mihoyoGame/genshin/role/keqin/index.vue')
+                  }
+                ]
               },
               {
                 path: 'genshinWeapons',
                 name: 'GenshinWeapons',
                 meta: {
-                  menu: false,
+                  menu: true,
                   subMenu: false,
                   title: 'WEAPONS'
                 },
@@ -120,7 +164,7 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'honkaiRole',
                 name: 'HonkaiRole',
                 meta: {
-                  menu: false,
+                  menu: true,
                   subMenu: false,
                   title: 'ROLE'
                 },
@@ -131,7 +175,7 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'honkaiWeapons',
                 name: 'HonkaiWeapons',
                 meta: {
-                  menu: false,
+                  menu: true,
                   subMenu: false,
                   title: 'WEAPONS'
                 },
@@ -139,6 +183,16 @@ const routes: Array<RouteRecordRaw> = [
                   import('@/views/mihoyoGame/honkai3rd/weapons/index.vue')
               }
             ]
+          },
+          {
+            path: 'overview',
+            name: 'Overview',
+            meta: {
+              menu: true,
+              subMenu: false,
+              title: 'OVERVIEW'
+            },
+            component: () => import('@/views/mihoyoGame/overview/index.vue')
           }
         ]
       }

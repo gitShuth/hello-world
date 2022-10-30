@@ -4,75 +4,73 @@
     class="el-menu-vertical-demo"
     :router="true"
   >
-    <template v-for="(item, index) in menuList" :key="index">
-      <el-sub-menu v-if="item.meta?.subMenu" :index="item.path">
-        <template #title>
-          <span>{{ item.meta?.title }}</span>
-        </template>
-        <template v-for="(item1, index1) in item.children" :key="index1">
-          <el-sub-menu v-if="item1.meta?.subMenu" :index="item1.path">
-            <template #title>
-              <span>{{ item1.meta?.title }}</span>
-            </template>
-            <template v-for="(item2, index1) in item1.children" :key="index1">
-              <el-sub-menu v-if="item2.meta?.subMenu" :index="item2.path">
-                <template #title>
-                  <span>{{ item2.meta?.title }}</span>
-                </template>
-              </el-sub-menu>
-              <el-menu-item
-                v-else
-                :index="item2.path"
-                :route="{ name: item2.name }"
-              >
-                <span>{{ item2.meta?.title }}</span>
-              </el-menu-item>
-            </template>
-          </el-sub-menu>
-          <el-menu-item
-            v-else
-            :index="item1.path"
-            :route="{ name: item1.name }"
-          >
-            <span>{{ item1.meta?.title }}</span>
-          </el-menu-item>
-        </template>
-      </el-sub-menu>
-      <el-menu-item v-else :index="item.path" :route="{ name: item.name }">
-        <span>{{ item.meta?.title }}</span>
-      </el-menu-item>
-    </template>
+    <menuItem
+      v-for="(item, index) in menuList"
+      :data="item"
+      :key="index"
+    ></menuItem>
   </el-menu>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import { useRouter, useRoute, RouteRecordRaw } from 'vue-router'
+import { ref, watch, computed } from "vue";
+import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
+import menuItem from "./menuItem.vue";
+import { MenuData } from "./MenuData";
 
-const router = useRouter()
-const route = useRoute()
-const selected = computed(() => {
-  const routeArr = route.path.split('/').filter((val) => val !== '')
-  return routeArr[routeArr.length - 1]
-})
+const router = useRouter();
+const route = useRoute();
+const menuList = ref<MenuData[]>([]);
+const selected = ref<string>('');
 
-const menuList = ref<RouteRecordRaw[]>()
-menuList.value = router
-  .getRoutes()
-  .find((item) => item.name === 'Index')?.children
+const routes = router.getRoutes().find((item) => item.name === 'Index')?.children;
 
-console.log(333333, menuList.value)
-// console.log(444444, route.path)
+const buildNav = (routes: RouteRecordRaw[] = []): MenuData[] => {
+  const result: MenuData[] = [];
+  for (const route of routes) {
+    const { path, name, meta = {}, children = [] } = route;
+    const { icon, iconName, menu, subMenu, title } = meta;
+    if (menu) {
+      result.push({
+        routePath: path,
+        routeName: name as string,
+        subMenu: subMenu as boolean,
+        routeTitle: title as string,
+        routeIcon: icon as boolean,
+        IconName: iconName as string,
+        children: buildNav(children),
+      });
+    }
+  }
+  return result;
+};
+menuList.value = buildNav(routes);
 
-// const handleOpen = (key: string, keyPath: string[]) => {
-//   // console.log(key, keyPath)
-// }
-// const handleClose = (key: string, keyPath: string[]) => {
-//   // console.log(key, keyPath)
-// }
-// const handleSelect = (key: string, keyPath: string[]) => {
-//   selected.value = key
-// }
+function findRoute(menu: MenuData[], Fn: Function) {
+  const routeArr = route.path.split('/').filter((val) => val !== '');
+  for (let i: number = 0; i < routeArr.length; i++) {
+    if (Fn(menu, routeArr[i])) return;
+  }
+}
+watch(
+  () => route.fullPath,
+  () => findRoute(menuList.value, findFn),
+  {
+    deep: true,
+    immediate: true,
+  }
+);
+
+function findFn(menu: MenuData[], routePath: string) {
+  menu.forEach((item) => {
+    if (item.routePath === routePath && item.subMenu === false) {
+      selected.value = item.routePath;
+      return true;
+    } else {
+      findFn(item.children, routePath);
+    }
+  });
+}
 </script>
 
 <style lang="less" scoped></style>

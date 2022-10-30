@@ -5,13 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
-const preview = ref('')
+const preview = ref("");
 
 onMounted(() => {
-  preview.value = JSON.parse(window.localStorage.getItem('markdown') as string)
-})
+  // preview.value = JSON.parse(window.localStorage.getItem('markdown') as string)
+});
 </script>
 
 <style scoped></style>

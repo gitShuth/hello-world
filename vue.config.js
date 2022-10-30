@@ -5,7 +5,7 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://192.168.233.68',
+        target: 'http://rap2api.taobao.org/app/mock/304665',
         ws: true,
         secure: false,
         changeOrigin: true,
